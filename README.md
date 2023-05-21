@@ -1,5 +1,6 @@
 # JunkCtrl
-Take ctrl (Catarl or Control) over the junk that ends up on your Windows 11 system
+Take ctrl (Catarl or Control) over the junk that ends up on your Windows 11 system. 
+_Replacment for [BloatBox](https://github.com/builtbybel/bloatbox) on Windows 10_
 
 Windows 11 stock apps eat a lot of your disk space. Some are helpful, others feel as bloatware. 
                        This app can automatically scan your system for bloatware and remove it in the same step.
