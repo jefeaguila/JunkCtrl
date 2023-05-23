@@ -18,7 +18,7 @@ Perhaps a part of [Cleanmgr+](https://github.com/builtbybel/CleanmgrPlus ) could
 **The only thing missing for Junkctrl now is an app icon. If you have any suggestions, please let me know.**
 
 ## Info
-If you know potentially dangerous apps (fake, spyware, stolen and resold code) in MS Store please feel free to share them [here](https://github.com/builtbybel/JunkCtrl/issues/7) Attempting to provide a small signature file that exposes this junk. It is definitely there.
+If you know any scam and insecure store apps (fake, spyware, stolenand paid code) in MS Store please feel free to share them [here](https://github.com/builtbybel/JunkCtrl/issues/7) Attempting to provide a small signature file that exposes this junk. It is definitely there.
 
 
 ## Download
