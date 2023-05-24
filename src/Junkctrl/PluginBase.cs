@@ -80,7 +80,7 @@ namespace Junkctrl
                         {
                             string powerShellCode = await reader.ReadToEndAsync();
                             await ExecutePowerShellCode(powerShellCode);
-                            break; // Assuming there is only one @copilot block per file
+                            break; 
                         }
                     }
                 }
