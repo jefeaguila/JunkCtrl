@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -34,6 +35,12 @@ namespace Junkctrl.Views
         {
             btnMeatballMenu.Text = "\uE712";
             btnRefresh.Text = "\uE895";
+            btnBack.Text = "\uE72B";
+            BackColor =
+            listApps.BackColor =
+            listRemove.BackColor =
+            rtbStatus.BackColor =
+                  Color.FromArgb(239, 239, 247);
         }
 
         private void InitializeApps()
@@ -143,8 +150,8 @@ namespace Junkctrl.Views
         {
             int installed = listApps.Items.Count;
             int remove = listRemove.Items.Count;
-           lblAppsInstalled.Text = installed.ToString() + " apps installed";
-           lblAppsBin.Text = "Recycle bin" + " (" + remove.ToString() + ")";
+            lblAppsInstalled.Text = installed.ToString() + " apps installed";
+            lblAppsBin.Text = "Recycle bin" + " (" + remove.ToString() + ")";
 
             if (listRemove.Items.Count == 0)
             {
@@ -321,8 +328,18 @@ namespace Junkctrl.Views
             }
         }
 
+        private void btnMeatballMenu_Click(object sender, EventArgs e)
+             => this.contextKebapMenu.Show(Cursor.Position.X, Cursor.Position.Y);
+
         private void textSearch_Click(object sender, EventArgs e)
-                => textSearch.Text = "";
+               => textSearch.Text = "";
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            var mainForm = Application.OpenForms.OfType<MainForm>().Single();
+            mainForm.pnlForm.Controls.Clear();
+            if (mainForm.INavPage != null) mainForm.pnlForm.Controls.Add(mainForm.INavPage);
+        }
 
         private void btnAppOptions_Click(object sender, EventArgs e)
         {
@@ -334,9 +351,6 @@ namespace Junkctrl.Views
             InitializeAppsSystem();
             InitializeApps();
         }
-
-        private void btnKebapMenu_Click(object sender, EventArgs e)
-              => this.contextKebapMenu.Show(Cursor.Position.X, Cursor.Position.Y);
 
         private void lblAppsBinOptions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
             => menuAppsImport.PerformClick();
@@ -417,7 +431,5 @@ namespace Junkctrl.Views
                 }
             }
         }
-
-
     }
 }

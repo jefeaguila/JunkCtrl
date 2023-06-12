@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -35,9 +34,8 @@ namespace Junkctrl
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            _lblAssembly.Text = "Version " + Program.GetCurrentVersionTostring();
+            _Assembly.Text = "Version " + Program.GetCurrentVersionTostring();
             this.AddJunkScans();
-            this.AddJunkTopTen();
 
             this.SetStyle();
         }
@@ -47,13 +45,16 @@ namespace Junkctrl
             btnKebapMenu.Text = "\u22ee";
             btnBack.Text = "\uE72B";
 
-            INavPage = sc.Panel2.Controls[0];              // Set default NavPage
-            logger.SetTarget(checkResults);               // Add results to checkedListBox
+            pnlForm.BackColor =
+            pnlMain.BackColor =
+            tvwFeatures.BackColor =
+            checkResults.BackColor =
+            pnlCapabilities.BackColor =
+                  Color.FromArgb(239, 239, 247);
+            pbBackground.ImageLocation = "https://github.com/builtbybel/BloatyNosy/blob/main/assets/BackgroundImageA.png?raw=true";
 
-            // Enables double-buffering here in sc.panel2 using reflection => move later to e.g. DoubleBufferedSplitContainer
-            typeof(Panel).InvokeMember("DoubleBuffered",
-             BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-             null, sc.Panel2, new object[] { true });
+            INavPage = pnlForm.Controls[0];              // Set default NavPage
+            logger.SetTarget(checkResults);               // Add results to checkedListBox
         }
 
         public void SetView(Control View)
@@ -65,8 +66,8 @@ namespace Junkctrl
             INavPage.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom);
             INavPage.Dock = DockStyle.Fill;
 
-            sc.Panel2.Controls.Clear();
-            sc.Panel2.Controls.Add(View);
+            pnlForm.Controls.Clear();
+            pnlForm.Controls.Add(View);
         }
 
         public void AddJunkScans()
@@ -76,8 +77,8 @@ namespace Junkctrl
 
             // Default auto scans
             TreeNode root = new TreeNode("Windows 11 " + OsHelper.GetVersion(), new TreeNode[] {
-                new FeatureNode(new Features.Feature.Apps.AutoApps()),
-                new FeatureNode(new Features.Feature.Apps.PrivateApps()),
+                new FeatureNode(new Features.Feature.Apps.AutoJunk()),
+                new FeatureNode(new Features.Feature.Apps.PrivateJunk()),
             })
 
             {
@@ -88,7 +89,7 @@ namespace Junkctrl
             if (!Directory.Exists(HelperTool.Utils.Data.PluginsDir))
             {
                 tvwFeatures.Nodes.Add(root);
-                AddAssistantNode(root);
+                AddCopilotNode(root);
                 ExpandTreeViewNodes();
                 tvwFeatures.Nodes[0].NodeFont = new Font(tvwFeatures.Font, FontStyle.Bold);
                 tvwFeatures.EndUpdate();
@@ -102,18 +103,18 @@ namespace Junkctrl
                 root.Nodes.Add(pluginsNode);
             }
             tvwFeatures.Nodes.Add(root);
-            AddAssistantNode(root);
+            AddCopilotNode(root);
             ExpandTreeViewNodes();
             tvwFeatures.Nodes[0].NodeFont = new Font(tvwFeatures.Font, FontStyle.Bold);
             tvwFeatures.EndUpdate();
         }
 
-        // Use Assistant for skipping auto scans
-        private void AddAssistantNode(TreeNode root)
+        // Use Copilot for skipping auto scans
+        private void AddCopilotNode(TreeNode root)
         {
-            TreeNode assistantNode = new TreeNode("Skip and use Copilot ");
-            root.Nodes.Add(assistantNode);
-            TreeNodeTheming.RemoveCheckmarks(tvwFeatures, assistantNode);
+            TreeNode copilotNode = new TreeNode("Skip and use Copilot ");
+            root.Nodes.Add(copilotNode);
+            TreeNodeTheming.RemoveCheckmarks(tvwFeatures, copilotNode);
         }
 
         // Add the Plugins node (if available)
@@ -146,7 +147,7 @@ namespace Junkctrl
 
                 // Get the information from the Info() method
                 string info = feature.Info();
-                lnkStatus.Text = info;
+                lnkHeader.Text = info;
             }
             else if (e.Node.Parent != null && e.Node.Parent.Text == "Plugins")
             {
@@ -157,23 +158,20 @@ namespace Junkctrl
                 string info = pluginBase.GetPluginInfo(pluginName);
 
                 // Display the info
-                lnkStatus.Text = info;
+                lnkHeader.Text = info;
             }
             else
             {
-                lnkStatus.Text = "Idle.";
+                lnkHeader.Text = "Idle.";
             }
 
             switch (e.Node.Text)
             {
                 case "Skip and use Copilot ":
-                    this.SetView(new CopilotPageView());  // Set Assistant view
-                    sc.Panel1Collapsed = true;
+                    this.SetView(new CopilotPageView());  // Set Copilot view
                     break;
 
                 default:
-                    sc.Panel2.Controls.Clear();
-                    if (INavPage != null) sc.Panel2.Controls.Add(INavPage);
                     break;
             }
         }
@@ -187,7 +185,7 @@ namespace Junkctrl
                 child.Checked = e.Node.Checked;
             }
 
-            // Remove checkmarks from assistant child node
+            // Remove checkmarks from copilot child node
             TreeNodeTheming.RemoveCheckmarks(tvwFeatures, tvwFeatures.Nodes[0].Nodes[3]);
             tvwFeatures.EndUpdate();
         }
@@ -195,6 +193,8 @@ namespace Junkctrl
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             Reset();
+            btnBack.PerformClick();
+            pnlCapabilities.SendToBack();
             checkResults.Items.Clear();
             logger.GetLogList().Clear();
             btnSearch.Enabled = false;
@@ -214,12 +214,12 @@ namespace Junkctrl
                 if (shouldPerform)
                 {
                     performFeaturesCount += 1;
-                    node.ForeColor = Color.Crimson;
+                    // node.ForeColor = Color.Crimson;
                 }
                 else
                 {
                     node.Checked = false;
-                    node.ForeColor = Color.Gray;
+                    // node.ForeColor = Color.Gray;
                 }
             }
 
@@ -233,9 +233,11 @@ namespace Junkctrl
             DoProgress(100);
 
             btnSearch.Enabled = true;
-            lnkStatus.Text = "Scans completed. See details below.\r\n";
+            lnkStatus.Text = "Scans completed. Click to switch view.";
             btnBack.Enabled = true;
-            btnBack.PerformClick();
+
+            int itemsInRecycleList = checkResults.Items.Count;
+            lblItemsInRecycleList.Text = itemsInRecycleList.ToString() + " junk apps found.";
         }
 
         private void SelectFeatureNodes(TreeNodeCollection trNodeCollection, bool isCheck)
@@ -275,7 +277,7 @@ namespace Junkctrl
                 {
                     string item = checkResults.Items[i].ToString();
 
-                    if (item.Contains("[!]"))
+                    if (item.Contains("[!]") || (item.Contains("(We recommend uninstalling this app)")))
                     {
                         // Skip adding the item to the recycleList
                         continue;
@@ -323,11 +325,12 @@ namespace Junkctrl
 
         public void ToggleControlVisibility()
         {
-            tvwFeatures.Visible = !tvwFeatures.Visible;
+            pnlCapabilities.Visible = !pnlCapabilities.Visible;
 
-            if (tvwFeatures.Visible)
+            if (pnlCapabilities.Visible)
             {
-                tvwFeatures.BringToFront();
+                pnlCapabilities.BringToFront();
+                checkResults.Visible = true;
             }
             else
             {
@@ -337,77 +340,39 @@ namespace Junkctrl
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            sc.Panel2.Controls.Clear();
-            sc.Panel2.Controls.Add(INavPage);
-            sc.Panel1Collapsed = false;
+     
+            pnlForm.Controls.Add(INavPage);
             ToggleControlVisibility();
         }
 
         public void ClearPanel2Controls()
-        => sc.Panel2.Controls.Clear();
+            => pnlForm.Controls.Clear();
 
         public void AddINavPageToPanel2()
-           => sc.Panel2.Controls.Add(INavPage);
+           => pnlForm.Controls.Add(INavPage);
 
         private void lnkStatus_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
            => btnBack.PerformClick();
 
-        private void btnAppMediaGitHub_Click(object sender, EventArgs e)
-             => Process.Start(HelperTool.Utils.Uri.URL_GITREPO);
+        private void lnkHeader_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+          => MessageBox.Show(lnkHeader.Text, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        private void btnKebapMenu_Click(object sender, EventArgs e)
+             => this.contextKebapMenu.Show(Cursor.Position.X, Cursor.Position.Y);
 
         private void lnkAppMediaTwitter_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
              => Process.Start(HelperTool.Utils.Uri.URL_TWITTER);
 
-        private void lnkUpdateCheck_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void _Assembly_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
              => HelperTool.Utils.CheckForUpdates();
 
         private void lnkAppMediaDonate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
              => Process.Start(HelperTool.Utils.Uri.URL_DONATE);
 
-        private void btnKebapMenu_Click(object sender, EventArgs e)
-            => this.contextKebapMenu.Show(Cursor.Position.X, Cursor.Position.Y);
+        private void lnkAppMediaGitHub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+          => Process.Start(HelperTool.Utils.Uri.URL_GITREPO);
 
-        private void lblHideWelcomeMsg_Click(object sender, EventArgs e)
-        {
-            lblHeader.Visible = false;
-            lblHideWelcomeMsg.Visible = false;
-        }
-
-        private void btnAddTopTenToBin_Click(object sender, EventArgs e)
-        {
-            foreach (var item in listTopTen.SelectedItems)
-            {
-                recycleList.Add(item.ToString());
-            }
-            this.SetView(new CopilotPageView());
-        }
-
-        private void textSearch_TextChanged(object sender, EventArgs e)
-        {
-            List<string> logList = logger.GetLogList();
-            checkResults.Items.Clear();
-
-            foreach (string str in logList)
-            {
-                if (str.IndexOf(textSearch.Text, 0, StringComparison.CurrentCultureIgnoreCase) != -1)
-                {
-                    checkResults.Items.Add(str);
-                }
-            }
-        }
-
-        private void textSearch_Click(object sender, EventArgs e)
-             => textSearch.Text = "";
-
-        private void AddJunkTopTen()
-        {
-            var apps = BloatwareTopTen.GetList();
-
-            foreach (string app in apps)
-            {
-                listTopTen.Items.Add(app);
-            }
-        }
+        private void lnkHeader_Click(object sender, EventArgs e)
+         => MessageBox.Show(lnkHeader.Text, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         private void menuPluginsDir_Click(object sender, EventArgs e)
         {
@@ -494,6 +459,18 @@ namespace Junkctrl
             {
                 MessageBox.Show("No plugin selected.", "Something went wrong", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void lnkAddTopTenToBin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var apps = JunkTopTen.GetList();
+
+            foreach (string app in apps)
+            {
+                recycleList.Add(app);
+            }
+
+            this.SetView(new CopilotPageView());
         }
     }
 }

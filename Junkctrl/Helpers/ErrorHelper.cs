@@ -7,7 +7,7 @@ namespace Junkctrl
     internal class ErrorHelper
     {
         private static CheckedListBox target = null;
-        private static ErrorHelper instance; // Single instance of ErrorHelper
+        private static ErrorHelper instance;                // Single instance of ErrorHelper
         private List<string> logList = new List<string>(); // Add a List<string> to store log messages
 
         // Errorlogger to target richLog

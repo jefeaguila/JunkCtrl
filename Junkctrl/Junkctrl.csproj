@@ -57,10 +57,10 @@
   <ItemGroup>
     <Compile Include="FeatureBase.cs" />
     <Compile Include="FeatureNode.cs" />
-    <Compile Include="Features\AutoApps.cs" />
-    <Compile Include="Features\PrivateApps.cs" />
-    <Compile Include="Features\AppsEngine.cs" />
-    <Compile Include="Features\TopTenApps.cs" />
+    <Compile Include="Features\AutoJunk.cs" />
+    <Compile Include="Features\PrivateJunk.cs" />
+    <Compile Include="Features\IEJunk.cs" />
+    <Compile Include="Features\IETopJunk.cs" />
     <Compile Include="Helpers\ErrorHelper.cs" />
     <Compile Include="Helpers\HelperTool.cs" />
     <Compile Include="Helpers\OsHelper.cs" />
